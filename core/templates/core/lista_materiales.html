@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <title>{{ titulo }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;}
+        .container { max-width: 1000px; margin: 30px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { color: #333; margin: 0; }
+        .back-link { text-decoration: none; background-color: #6c757d; color: white; padding: 8px 15px; border-radius: 4px; transition: background-color 0.3s ease; }
+        .back-link:hover { background-color: #5a6268; }
+        
+        .material-display { display: flex; align-items: flex-start; gap: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .material-image-container { flex-shrink: 0; width: 300px; height: 300px; border: 1px solid #eee; border-radius: 4px; overflow: hidden; }
+        .material-image-container img { width: 100%; height: 100%; object-fit: contain; background-color: #fff; }
+        .material-details { flex-grow: 1; text-align: left; }
+        .material-details h3 { margin-top: 0; font-size: 28px; color: #333; margin-bottom: 10px; }
+        .material-details p { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 20px; }
+
+        /* Estilos para el formulario de cantidad */
+        .quantity-section { margin-top: 20px; }
+        .quantity-label { font-size: 18px; font-weight: bold; color: #333; display: block; margin-bottom: 10px; }
+        
+        
+        .quantity-form { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .quantity-form button { 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 8px 15px; 
+            font-size: 18px; 
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-radius: 4px;
+        }
+        .quantity-form button.disminuir { background-color: #dc3545; }
+        .quantity-form button.disminuir:hover { background-color: #c82333; }
+        .quantity-form button:hover { background-color: #0056b3; }
+        
+       
+        .quantity-input { 
+            font-size: 20px; 
+            font-weight: bold; 
+            padding: 8px 10px;
+            color: #333;
+            width: 70px; /* Ancho fijo para la caja */
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        
+        .actualizar-btn {
+            background-color: #28a745 !important; /* Verde */
+            font-weight: bold;
+            padding: 10px 20px !important;
+        }
+        .actualizar-btn:hover {
+            background-color: #218838 !important;
+        }
+        
+        
+        .non-staff-quantity { font-size: 20px; font-weight: bold; color: #333; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>{{ titulo }}</h1>
+            <a href="{% url 'almacen' %}" class="back-link">← Volver al Almacén</a>
+        </div>
+
+        {% for material in materiales %}
+            <div class="material-display">
+                <div class="material-image-container">
+                    {% if material.imagen %}
+                        <img src="{{ material.imagen.url }}" alt="{{ material.nombre }}">
+                    {% else %}
+                        <img src="{% static 'img/placeholder.png' %}" alt="Imagen no disponible"> 
+                    {% endif %}
+                </div>
+                
+                <div class="material-details">
+                    <h3>{{ material.nombre }}</h3>
+                    <p>{{ material.descripcion }}</p>
+
+                    <div class="quantity-section">
+                        <span class="quantity-label">Cantidad:</span>
+                        
+                        {% if user.is_staff %}
+                            <form action="{% url 'actualizar_cantidad' material.id %}" method="post" class="quantity-form">
+                                {% csrf_token %}
+                                
+                                <button type="button" class="disminuir" onclick="cambiarCantidad('cantidad-{{ material.id }}', -1)">-</button>
+                                
+                                <input type="number" 
+                                       name="cantidad_nueva" 
+                                       id="cantidad-{{ material.id }}" 
+                                       class="quantity-input" 
+                                       value="{{ material.cantidad }}" 
+                                       min="0">
+                                
+                                <button type="button" onclick="cambiarCantidad('cantidad-{{ material.id }}', 1)">+</button>
+
+                                <button type="submit" class="actualizar-btn">Actualizar</button>
+                            </form>
+                        {% else %}
+                            <span class="non-staff-quantity">{{ material.cantidad }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p style="text-align: center; font-size: 1.2em; color: #666;">No hay materiales disponibles en esta categoría.</p>
+        {% endfor %}
+    </div>
+
+    <script>
+        function cambiarCantidad(inputId, monto) {
+           
+            let input = document.getElementById(inputId);
+            
+          
+            let valorActual = parseInt(input.value);
+            
+           
+            let valorNuevo = valorActual + monto;
+            
+           
+            if (valorNuevo < 0) {
+                valorNuevo = 0;
+            }
+            
+            
+            input.value = valorNuevo;
+        }
+    </script>
+
+</body>
+</html>

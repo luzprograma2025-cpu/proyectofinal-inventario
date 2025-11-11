@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <title>Almacén de Soldadura y Pintura</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 40px; background-color: #f4f4f4; }
+        .container { max-width: 800px; margin: auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .logout-btn { text-decoration: none; background-color: #dc3545; color: white; padding: 8px 15px; border-radius: 4px; }
+        
+       
+        .search-bar { margin: 30px 0; }
+        .search-bar form { display: flex; justify-content: center; }
+        .search-input { 
+            width: 50%; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px 0 0 4px; 
+            margin: 0;
+            font-size: 16px;
+        }
+        .search-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 0 4px 4px 0; 
+        }
+        .search-btn:hover { background-color: #0056b3; }
+        
+        .material-buttons { display: flex; justify-content: center; gap: 20px; }
+        .material-btn { text-decoration: none; font-size: 18px; padding: 40px 60px; border: 1px solid #ccc; border-radius: 8px; color: #333; }
+        .material-btn:hover { background-color: #e9e9e9; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Almacén de Soldadura y Pintura</h1>
+            <span>Hola, <strong>{{ user.username }}</strong></span>
+            <a href="{% url 'logout' %}" class="logout-btn">Salir</a>
+        </div>
+
+        <div class="search-bar">
+            <form action="{% url 'search' %}" method="GET">
+                <input type="text" name="q" placeholder="Busca material por nombre o descripción" class="search-input">
+                <button type="submit" class="search-btn">Buscar</button>
+            </form>
+        </div>
+
+        <div class="material-buttons">
+            <a href="{% url 'lista_materiales' 'critico' %}" class="material-btn">Material Crítico</a>
+            <a href="{% url 'lista_materiales' 'interno' %}" class="material-btn">Material Interno</a>
+        </div>
+    </div>
+
+</body>
+</html>
